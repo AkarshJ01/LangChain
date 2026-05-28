@@ -1,38 +1,47 @@
 import os
 from langchain_core.prompts import PromptTemplate
 from langchain_ollama import ChatOllama
-from langfuse.langchain import CallbackHandler
-from dotenv import load_dotenv
 
+from langfuse.langchain import CallbackHandler
+
+from dotenv import load_dotenv
 load_dotenv()
 
+from langchain.agents import create_agent
+from langchain.tools import tool
+from langchain_core.messages import HumanMessage
+
+
+from langchain_tavily import TavilySearch
+
+# @tool
+# def search(query: str) -> str:
+#     """
+#     Tool that searchs the internet
+#     Args :
+#         query : The query to search for
+#     Returns :
+#         The search result
+#     """
+#     print (f"Seach for {query}")
+#     return "Tokyo weather is great"
+
+MODEL = "llama3.1:8b"
+
+llm = ChatOllama(temperature=0, model= MODEL)
+tools = [TavilySearch()]
+agent = create_agent(model = llm , tools = tools)
+
+ 
 def main():
-    print("Hello from langchain!")
-
-    information = """
-    Steven Paul Jobs (February 24, 1955 – October 5, 2011) was an American businessman...
-    """
-
-    summary_template = """
-    Given the information {information} create: 
-    1. A short summary 
-    2. 2 Interesting facts about them
-    """
-
-    summary_prompt_template = PromptTemplate(
-        input_variables=["information"], template=summary_template
-    )
-
-    llm = ChatOllama(temperature=0, model="gemma4:e4b")
-    chain = summary_prompt_template | llm
+    print(f"Hello from {MODEL}! \n")
 
     langfuse_handler = CallbackHandler()
 
-    response = chain.invoke(
-        input={"information": information},
-        config={"callbacks": [langfuse_handler]}
-    )
-    print(response.content)
+    result = agent.invoke({"messages" : [HumanMessage(content=f"Is the ai model {MODEL} in any way related to china?")]},
+                          config={"callbacks": [langfuse_handler]})
+    print(f"{result["messages"][-1].content} \n")
 
+ 
 if __name__ == "__main__":
     main()
