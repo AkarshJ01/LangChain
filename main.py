@@ -26,19 +26,21 @@ from langchain_tavily import TavilySearch
 #     print (f"Seach for {query}")
 #     return "Tokyo weather is great"
 
-llm = ChatOllama(temperature=0, model="llama3.1:8b")
+MODEL = "llama3.1:8b"
+
+llm = ChatOllama(temperature=0, model= MODEL)
 tools = [TavilySearch()]
 agent = create_agent(model = llm , tools = tools)
 
  
 def main():
-    print("Hello from langchain!")
+    print(f"Hello from {MODEL}! \n")
 
     langfuse_handler = CallbackHandler()
 
-    result = agent.invoke({"messages" : [HumanMessage(content="What is the average package of computer science btech in nit warangal ")]},
+    result = agent.invoke({"messages" : [HumanMessage(content=f"Is the ai model {MODEL} in any way related to china?")]},
                           config={"callbacks": [langfuse_handler]})
-    print(result["messages"][-1].content)
+    print(f"{result["messages"][-1].content} \n")
 
  
 if __name__ == "__main__":
