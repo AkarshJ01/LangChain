@@ -2,7 +2,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-
 from langchain.chat_models import init_chat_model
 from langchain.tools import tools
 from langchain_core.messages import HumanMessage, SystemMessage , ToolMessage
@@ -13,7 +12,7 @@ MODEL = "llama3.1:8b"
 
 @tools
 def get_product_price(product : str) -> float:
-    """Finding price of the product"""
+    """Finding price of the product (Doesn't include discount)"""
 
     print(f"Product being found : {product}")
 
